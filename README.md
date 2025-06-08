@@ -35,5 +35,5 @@ El propósito de este proyecto es automatizar la resolución de *issues* de GitH
 
 Si necesitas ayuda con la configuración o ejecución, puedes abrir un *issue* en este repositorio.
 
-#Video:
+## Video:
 - https://www.youtube.com/watch?v=-G_p4gRiJnw&feature=youtu.be
