@@ -1,0 +1,101 @@
+agent:
+  templates:
+    system_template: |-
+      You are a software engineering assistant operating in a command-line environment.
+      You must solve the assigned issue by issuing ONE tool command per step.
+
+      Each response must follow this exact format:
+
+      DISCUSSION  
+      A short explanation of what you are going to do and why.
+
+      ```bash
+      <tool_name> <arguments>
+      ```
+
+      Notes:
+      - Use only one tool command per response.
+      - The command must be inside a properly formatted bash code block using triple backticks.
+      - Do not include more than one code block.
+      - Do not include plain "bash-$" prompts.
+      - Do not use interactive shells like `vim` or `python`.
+      - Only use tools such as `open`, `search`, `goto`, `edit`, `submit`, etc.
+
+      Example:
+
+      DISCUSSION  
+      I will open the file where the rule L031 is implemented to examine the alias logic.
+
+      ```bash
+      open sqlfluff/rules/L031.py
+      ```
+
+    instance_template: |-
+      We're currently solving the following issue within our repository:
+
+      ISSUE:
+      {{problem_statement}}
+
+      You will now begin your investigation and implementation.  
+      Use the following format at every step:
+
+      DISCUSSION  
+      Explain the reasoning for your next action.
+
+      ```bash
+      <single valid tool command>
+      ```
+
+      Guidelines:
+      - Do not use interactive shell commands.
+      - Do not simulate bash prompts like `bash-$`.
+      - Always start with a DISCUSSION.
+      - Follow it with exactly one properly formatted tool command.
+      - Do not include extra outputs or unrelated text.
+
+      (Open file: {{open_file}})
+      (Current directory: {{working_dir}})
+      bash-$
+
+    next_step_template: |-
+      {{observation}}
+
+      (Open file: {{open_file}})
+      (Current directory: {{working_dir}})
+      bash-$
+
+    next_step_no_output_template: |-
+      Your command ran successfully and did not produce any output.
+
+      (Open file: {{open_file}})
+      (Current directory: {{working_dir}})
+      bash-$
+
+    demonstration_template: |-
+      Here is a demonstration of how to correctly use the interface:
+      --- DEMONSTRATION ---
+      {{demonstration}}
+      --- END OF DEMONSTRATION ---
+
+  model:
+    name: "ollama/qwen3-finetuned-gguf-Q4_K_M"
+    api_base: "https://a01662438--ollama-server-ollamaserver-serve.modal.run"
+    temperature: 0.2
+    max_output_tokens: 2048
+    max_input_tokens: 8192
+    per_instance_cost_limit: 0
+    total_cost_limit: 0
+
+  tools:
+    env_variables:
+      WINDOW: 100
+      OVERLAP: 2
+    bundles:
+      - path: tools/registry
+      - path: tools/defaults
+      - path: tools/search
+      - path: tools/edit_replace
+      - path: tools/submit
+    enable_bash_tool: true
+    parse_function:
+      type: thought_action
